@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "identity-authen-api.proto",
+    "title": "customer-api.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "IdentityAuthenService"
+      "name": "CustomerService"
     }
   ],
   "consumes": [
@@ -16,14 +16,14 @@
     "application/json"
   ],
   "paths": {
-    "/v1/identity-authen-api/forgot_password": {
+    "/v1/customer-api/{ctx.domain_id}/tenants": {
       "post": {
-        "operationId": "IdentityAuthenService_ForgotPassword",
+        "operationId": "Create",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
+              "$ref": "#/definitions/customer_apiTenantResponse"
             }
           },
           "default": {
@@ -35,59 +35,52 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
+            "name": "ctx.domain_id",
+            "in": "path",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiForgotPasswordRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/forgot_password/update": {
-      "post": {
-        "operationId": "IdentityAuthenService_UpdateForgotPassword",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
+            "type": "string"
           },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity_authen_apiUpdatePasswordRequest"
+              "type": "object",
+              "properties": {
+                "ctx": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "$ref": "#/definitions/customer_apiTenant"
+                }
+              }
             }
           }
         ],
         "tags": [
-          "IdentityAuthenService"
+          "CustomerService"
         ]
       }
     },
-    "/v1/identity-authen-api/get_mfa/{value}": {
+    "/v1/customer-api/{ctx.domain_id}/tenants/@all/get_all": {
       "get": {
-        "operationId": "IdentityAuthenService_GetMfaType",
+        "operationId": "GetAll",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/identity_authen_apiMfaResponse"
+              "$ref": "#/definitions/customer_apiListTenantResponse"
             }
           },
           "default": {
@@ -98,6 +91,74 @@
           }
         },
         "parameters": [
+          {
+            "name": "ctx.domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ctx.access_token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "request_payload",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CustomerService"
+        ]
+      }
+    },
+    "/v1/customer-api/{ctx.domain_id}/tenants/get_by_domain/{value}": {
+      "post": {
+        "operationId": "GetByDomain",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/customer_apiTenantResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ctx.domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "value",
             "in": "path",
@@ -105,168 +166,6 @@
             "type": "string"
           },
           {
-            "name": "ctx.accessToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/login": {
-      "post": {
-        "operationId": "IdentityAuthenService_Login",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiLoginResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiLoginRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/logout": {
-      "get": {
-        "operationId": "IdentityAuthenService_Logout",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ctx.accessToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/prepare_login": {
-      "post": {
-        "operationId": "IdentityAuthenService_PrepareLogin",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiPrepareLoginResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiPrepareLoginRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/registers": {
-      "post": {
-        "operationId": "IdentityAuthenService_RegisterUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiUserRegisterRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/update_mfa/{userId}": {
-      "put": {
-        "operationId": "IdentityAuthenService_UpdateMfa",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -274,12 +173,17 @@
               "type": "object",
               "properties": {
                 "ctx": {
-                  "$ref": "#/definitions/identity_authen_apiContext"
-                },
-                "mfas": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/identity_authen_apiMfa"
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }
@@ -287,18 +191,18 @@
           }
         ],
         "tags": [
-          "IdentityAuthenService"
+          "CustomerService"
         ]
       }
     },
-    "/v1/identity-authen-api/update_password/{userId}": {
-      "put": {
-        "operationId": "IdentityAuthenService_UpdatePassword",
+    "/v1/customer-api/{ctx.domain_id}/tenants/{value}": {
+      "get": {
+        "operationId": "GetById",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
+              "$ref": "#/definitions/customer_apiTenantResponse"
             }
           },
           "default": {
@@ -310,7 +214,93 @@
         },
         "parameters": [
           {
-            "name": "userId",
+            "name": "ctx.domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ctx.access_token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CustomerService"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/customer_apiStringResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ctx.domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ctx.access_token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CustomerService"
+        ]
+      },
+      "put": {
+        "operationId": "Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/customer_apiTenantResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ctx.domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "value",
             "in": "path",
             "required": true,
             "type": "string"
@@ -323,251 +313,126 @@
               "type": "object",
               "properties": {
                 "ctx": {
-                  "$ref": "#/definitions/identity_authen_apiContext"
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 },
-                "password": {
-                  "type": "string"
+                "data": {
+                  "$ref": "#/definitions/customer_apiTenant"
                 }
               }
             }
           }
         ],
         "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/verify-forgot-password": {
-      "get": {
-        "operationId": "IdentityAuthenService_VerifyForgotPassword",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ctx.accessToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
-        ]
-      }
-    },
-    "/v1/identity-authen-api/verify-user": {
-      "get": {
-        "operationId": "IdentityAuthenService_VerifyUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/identity_authen_apiMessageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ctx.accessToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IdentityAuthenService"
+          "CustomerService"
         ]
       }
     }
   },
   "definitions": {
-    "identity_authen_apiContext": {
+    "ListRequestFilter": {
       "type": "object",
       "properties": {
-        "accessToken": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "operator": {
           "type": "string"
         }
       }
     },
-    "identity_authen_apiForgotPasswordRequest": {
+    "ListRequestOrderType": {
+      "type": "string",
+      "enum": [
+        "ASC",
+        "DESC"
+      ],
+      "default": "ASC"
+    },
+    "customer_apiContext": {
+      "type": "object",
+      "properties": {
+        "domain_id": {
+          "type": "string"
+        },
+        "access_token": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "customer_apiListTenantResponse": {
       "type": "object",
       "properties": {
         "data": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiLoginRequest": {
-      "type": "object",
-      "properties": {
-        "ctx": {
-          "$ref": "#/definitions/identity_authen_apiContext"
-        },
-        "type": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "otp": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "requestId": {
-          "type": "string"
-        },
-        "typeMfa": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiLoginResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string"
-        },
-        "errorCode": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiMessageResponse": {
-      "type": "object",
-      "properties": {
-        "ok": {
-          "type": "boolean"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiMfa": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
-        },
-        "secret": {
-          "type": "string"
-        },
-        "publicData": {
-          "type": "string"
-        },
-        "configured": {
-          "type": "boolean"
-        },
-        "url": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiMfaResponse": {
-      "type": "object",
-      "properties": {
-        "mfas": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/identity_authen_apiMfa"
+            "$ref": "#/definitions/customer_apiTenant"
           }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
-    "identity_authen_apiPrepareLoginRequest": {
-      "type": "object",
-      "properties": {
-        "ctx": {
-          "$ref": "#/definitions/identity_authen_apiContext"
-        }
-      }
+    "customer_apiStringResponse": {
+      "type": "object"
     },
-    "identity_authen_apiPrepareLoginResponse": {
+    "customer_apiTenant": {
       "type": "object",
       "properties": {
-        "token": {
+        "tenant_id": {
           "type": "string"
         },
-        "errorCode": {
+        "domain": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "created_time": {
           "type": "integer",
           "format": "int32"
         },
-        "message": {
-          "type": "string"
+        "updated_time": {
+          "type": "integer",
+          "format": "int32"
         },
-        "requestId": {
-          "type": "string"
-        },
-        "typeMfa": {
-          "type": "string"
-        },
-        "availableMfas": {
-          "type": "array",
-          "items": {
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
             "type": "string"
           }
         },
-        "secret": {
-          "type": "string"
-        },
-        "url": {
+        "customer_id": {
           "type": "string"
         }
       }
     },
-    "identity_authen_apiUpdatePasswordRequest": {
+    "customer_apiTenantResponse": {
       "type": "object",
       "properties": {
-        "ctx": {
-          "$ref": "#/definitions/identity_authen_apiContext"
-        },
-        "userId": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "identity_authen_apiUserRegisterRequest": {
-      "type": "object",
-      "properties": {
-        "fullName": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
+        "data": {
+          "$ref": "#/definitions/customer_apiTenant"
         }
       }
     },
