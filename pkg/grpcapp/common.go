@@ -17,7 +17,7 @@ func (inst *CustomerService) checkPermission(userContext entity.UserContext, ten
 			return errutil.Wrap(err, "TenantRepository.FindById")
 		}
 		if tenant == nil {
-			return errutil.Wrap(err, "Tenant not found")
+			return errutil.NewWithMessage("Tenant not found")
 		}
 		customerID, err := entityutil.GetUserId(userContext)
 		if err != nil {
